@@ -13,11 +13,30 @@ blueprint:
           manufacturer: Inovelli
     LEDEffectType:
       name: LED Effect Type
-      description: "0: Off, 1: Solid, 2: Fast Blink, 3: Slow Blink, 4: Pulse, 5: Chase, 6: Open/Close, 7: Small to Big, 255: Clear"
+      description: "Animation pattern to use for the notification."
       selector:
-        number:
-          min: 0
-          max: 255
+        select:
+          mode: "dropdown"
+          multiple: false
+          options:
+            - label: "Off"
+              value: "0"
+            - label: "Solid"
+              value: "1"
+            - label: "Fast Blink"
+              value: "2"
+            - label: "Slow Blink"
+              value: "3"
+            - label: "Pulse"
+              value: "4"
+            - label: "Chase"
+              value: "5"
+            - label: "Open/Close"
+              value: "6"
+            - label: "Small to Big"
+              value: "7"
+            - label: "Clear"
+              value: "255"
     LEDEffectColor:
       name: LED Effect Color
       description: "0:-254: Hue based on Color Wheel, 255: White"
@@ -42,6 +61,7 @@ blueprint:
 variables:
   device_str: !input notification_device
   device_ieee: "{{ (device_attr((device_str), 'identifiers')|list).0.1 }}"
+  led_effect: !input LEDEffectType
 mode: single
 sequence:
   - service: zha.issue_zigbee_cluster_command
@@ -53,7 +73,7 @@ sequence:
       command: 1
       command_type: server
       args:
-        - !input LEDEffectType
+        - "{{ led_effect |int }}"
         - !input LEDEffectColor
         - !input LEDEffectLevel
         - !input LEDEffectDuration
